@@ -14,6 +14,7 @@ vcs import < /tmp/.devcontainer/dds.repos
 #rosdep install --from-paths . -r -i -y
 cd /opt/ros/lcas
 colcon build
+colcon build --packages-select  ddsrouter_core --cmake-args -DLOG_INFO=ON
 
 
 #cd /home/lcas/ws

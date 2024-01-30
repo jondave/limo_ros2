@@ -1,0 +1,4 @@
+unset RMW_IMPLEMENTATION
+unset ROS_LOCALHOST_ONLY
+export FASTRTPS_DEFAULT_PROFILES_FILE=/workspaces/limo_ros2/.devcontainer/super_client_configuration_file.xml
+export ROS_DISCOVERY_SERVER=localhost:11888
