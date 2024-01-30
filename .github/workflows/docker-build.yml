@@ -2,11 +2,15 @@ name: Docker Image CI
 
 on:
   push:
+    paths: 
+    - .devcontainer/**
     branches: [ humble ]
     tags:
       - '*'
   pull_request:
     branches: [ humble ]
+    paths: 
+    - .devcontainer/**
 
 jobs:
 
