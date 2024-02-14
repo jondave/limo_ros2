@@ -4,7 +4,7 @@ services:
     image: lcas.lincoln.ac.uk/lcas/limo_ros_arm64:humble
     user: "ros"
     privileged: true
-    command: bash -c "source /opt/ros/lcas/install/setup.bash; (zenoh-bridge-ros2dds -l tcp/0.0.0.0:8888 &); ros2 launch limo_bringup limo_start.launch.py"
+    command: bash -c "source /opt/ros/lcas/install/setup.bash; (zenoh-bridge-ros2dds -l tcp/0.0.0.0:8888 &); (ros2 launch astra_camera dabai.launch.py &); ros2 launch limo_bringup limo_start.launch.py"
     volumes:
       - /dev:/dev
       - /tmp/.X11-unix:/tmp/.X11-unix
@@ -12,6 +12,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /home/agilex/.Xauthority:/home/ros/.Xauthority
     runtime: nvidia
+    restart: unless-stopped
     environment:
       - 'DISPLAY=:0'
       - 'ROS_LOCALHOST_ONLY=0'
