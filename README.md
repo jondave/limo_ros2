@@ -85,7 +85,7 @@ Once you're inside the container, the commands to build or launch ROS packages a
 
     ```bash
     # Launch SLAM node
-    ros2 launch limo_bringup cartographer.launch.py
+    ros2 launch limo_navigation cartographer.launch.py
 
     # To save map
     ros2 run nav2_map_server map_saver_cli -f [filename]
