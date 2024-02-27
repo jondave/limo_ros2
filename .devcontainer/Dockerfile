@@ -5,6 +5,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN useradd -ms /bin/bash ros && echo "ros:ros" | chpasswd && adduser ros sudo
 RUN adduser ros video
 # Builder dependencies installation
+
+RUN echo "deb [trusted=yes] https://download.eclipse.org/zenoh/debian-repo/ /" | tee -a /etc/apt/sources.list
+
 RUN apt-get update \
     && apt-get install -qq -y --no-install-recommends \
     build-essential \
@@ -51,7 +54,15 @@ RUN apt-get update \
     libssl-dev \
     python3-sphinx \
     libyaml-cpp-dev \
+    sudo \
+    ros-humble-cyclonedds \
+    ros-humble-zenoh-bridge-dds \
+    llvm-dev libclang-dev \
+    python3-rosdep \
     && rm -rf /var/lib/apt/lists/*
+
+# add sudo without password
+RUN echo "ALL ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 RUN git clone https://github.com/YDLIDAR/YDLidar-SDK.git &&\
     mkdir -p YDLidar-SDK/build && \
@@ -86,6 +97,16 @@ RUN git clone https://github.com/libuvc/libuvc.git &&\
     sudo ldconfig  &&\
     cd ../.. && rm -r libuvc*
 
+
+RUN mkdir -p /opt/lcas/extensions 
+WORKDIR /opt/lcas/extensions 
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y 
+RUN git clone https://github.com/eclipse-zenoh/zenoh-plugin-ros2dds.git
+WORKDIR /opt/lcas/extensions/zenoh-plugin-ros2dds
+RUN bash -c "source '$HOME/.cargo/env'; cargo build --release -p zenoh-bridge-ros2dds"
+RUN install target/release/zenoh-bridge-ros2dds /usr/local/bin/
+WORKDIR /
+
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
@@ -93,5 +114,6 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 COPY *repos *.sh /tmp/.devcontainer/
 RUN bash /tmp/.devcontainer/install.sh
 
-
 RUN echo "source /opt/ros/humble/setup.bash" >> /etc/bash.bashrc
+RUN cat /tmp/.devcontainer/setup-router.sh >> /etc/bash.bashrc
+
